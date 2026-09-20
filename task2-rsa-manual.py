@@ -19,9 +19,23 @@ print(f"\n[*] START \nPLAIN TEXT: {ptxt}")
 # def karatsuba(x, y):
 #     return 0
 
-# TODO FUNCTION: is_prime
-# def is_prime(n):
-#     return True
+def is_prime(n):
+    """True if n is prime, false if not"""
+
+    # Less than or even numbers
+    if n < 2 or n % 2 == 0:
+        return False
+    
+    # 2 is still prime
+    if n == 2:
+        return True
+
+    # Left with odd divisors, up to sqrt(n)
+    # From 3 onwards, check every odd number after. Check if it can be dvisable perfectly
+    for i in range (3, isqrt(n) + 1, 2):
+        if n % i == 0:
+            return False
+    return True
 
 # TODO FUNCTION: mod_inverse
 # def mod_inverse(a,m):
