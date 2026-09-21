@@ -43,7 +43,6 @@ def is_prime(n):
             return False
     return True
 
-# TODO FUNCTION: mod exp
 def mod_exp(base, exp, mod):
     """Computes (base ** exp) % mod for majoritty of RSA"""
     result = 1
@@ -57,13 +56,22 @@ def mod_exp(base, exp, mod):
         exp >>= 1
     return result
 
+def ext_gcd(a, b):
+    """Returns (g,x ,y), where a*x + b*y = g = gcd(a,b)"""
+    if b ==0:
+        return a, 1, 0
+    g, x1, y1 = ext_gcd(b, a % b)
+    x = y1
+    y = x1 - (a // b * y1)
+    return g, x, y
+
 # TODO FUNCTION: mod inverse
 # def mod_inverse(a,m):
 #     """Find x such that (a*x) mod m = 1, for finding exponent d"""
 #     g, x, _ = gcd_plus(a,m)
 
 #     if g!= 1:
-#         print(f"[!] Modular inverse does not exist")
+#         print(f"[!] mod_inverse: Modular inverse does not exist")
 #         return 0
 
 #     return x % m
