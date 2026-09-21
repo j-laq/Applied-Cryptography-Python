@@ -56,13 +56,13 @@ def mod_exp(base, exp, mod):
         exp >>= 1
     return result
 
-def ext_gcd(a, b):
+def ex_gcd(a, b):
     """Returns (g,x ,y), where a*x + b*y = g = gcd(a,b)"""
-    if b ==0:
+    if b == 0:
         return a, 1, 0
-    g, x1, y1 = ext_gcd(b, a % b)
+    g, x1, y1 = ex_gcd(b, a % b)
     x = y1
-    y = x1 - (a // b * y1)
+    y = x1 - (a // b) * y1
     return g, x, y
 
 # TODO FUNCTION: mod inverse
