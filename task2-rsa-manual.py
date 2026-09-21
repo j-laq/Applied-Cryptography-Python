@@ -1,6 +1,6 @@
 import os
 import random
-import math
+from math import gcd, isqrt
 
 # for base requirement, 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -43,16 +43,30 @@ def is_prime(n):
             return False
     return True
 
+# TODO FUNCTION: mod exp
+def mod_exp(base, exp, mod):
+    """Computes (base ** exp) % mod for majoritty of RSA"""
+    result = 1
+    base = base % mod
+    while exp > 0:
+        if exp & 1: #bitwise comparison: if current bit is 1, multiply into result
+            result = (result * base) % mod
 
-def mod_inverse(a,m):
-    """Find x such that (a*x) mod m = 1, for finding exponent d"""
-    g, x, _ = gcd_plus(a,m)
+        # Square base, shift exp right, which is divide by 2
+        base = (base * base) % mod
+        exp >>= 1
+    return result
 
-    if g!= 1:
-        print(f"[!] Modular inverse does not exist")
-        return 0
+# TODO FUNCTION: mod inverse
+# def mod_inverse(a,m):
+#     """Find x such that (a*x) mod m = 1, for finding exponent d"""
+#     g, x, _ = gcd_plus(a,m)
 
-    return x % m
+#     if g!= 1:
+#         print(f"[!] Modular inverse does not exist")
+#         return 0
+
+#     return x % m
 
 # TODO FUNCTION: gen_keypair(size)
 # def gen_keypair(size):
