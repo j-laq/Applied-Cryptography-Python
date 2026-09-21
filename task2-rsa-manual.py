@@ -1,5 +1,6 @@
 import os
-from math import gcd, isqrt #TODO: check with tutor on use of gcd and isqrt for math library, worse case: do it manual
+import random
+import math
 
 # for base requirement, 
 BASE = os.path.dirname(os.path.abspath(__file__))
@@ -15,9 +16,14 @@ print(f"\n[*] START \nPLAIN TEXT: {ptxt}")
 # TODO: encrypt c = m^e(mod n)
 # TODO: decrypt m = c^d(mod n)
 
-# TODO FUNCTION: karatsuba?? (will need to research on how it works)
-# def karatsuba(x, y):
+# TODO FUNCTION: gcd 
+# def gcd(a, b):
 #     return 0
+
+# TODO FUNCTION: gcd+ 
+# def gcd_plus(a, b):
+#     return 0
+
 
 def is_prime(n):
     """True if n is prime, false if not"""
@@ -37,9 +43,16 @@ def is_prime(n):
             return False
     return True
 
-# TODO FUNCTION: mod_inverse
-# def mod_inverse(a,m):
-#     return 0
+
+def mod_inverse(a,m):
+    """Find x such that (a*x) mod m = 1, for finding exponent d"""
+    g, x, _ = gcd_plus(a,m)
+
+    if g!= 1:
+        print(f"[!] Modular inverse does not exist")
+        return 0
+
+    return x % m
 
 # TODO FUNCTION: gen_keypair(size)
 # def gen_keypair(size):
