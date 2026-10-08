@@ -16,13 +16,18 @@ print(f"\n[*] START \nPLAIN TEXT: {ptxt}")
 # TODO: encrypt c = m^e(mod n)
 # TODO: decrypt m = c^d(mod n)
 
-# TODO FUNCTION: gcd 
-# def gcd(a, b):
-#     return 0
+# greatest common denominator 
+# print (gcd(48, 18))
+# answer: 6
+def gcd(a, b):
+    """Give me the greatest common denominator"""
+    while b != 0:
+        a, b = b, a % b
+    return a
 
-# TODO FUNCTION: gcd+ 
-# def gcd_plus(a, b):
-#     return 0
+# FUNCTION: gcd+ 
+def gcd_plus(a, b):
+    return ex_gcd(a,b)
 
 
 def is_prime(n):
