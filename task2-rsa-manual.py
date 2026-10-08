@@ -17,10 +17,8 @@ print(f"\n[*] START \nPLAIN TEXT: {ptxt}")
 # TODO: decrypt m = c^d(mod n)
 
 # greatest common denominator 
-# print (gcd(48, 18))
-# answer: 6
 def gcd(a, b):
-    """Give me the greatest common denominator"""
+    """Gives the greatest common denominator"""
     while b != 0:
         a, b = b, a % b
     return a
@@ -28,19 +26,22 @@ def gcd(a, b):
 # FUNCTION: gcd+ 
 def gcd_plus(a, b):
     return ex_gcd(a,b)
+# g, x, y = gcd_plus(48, 18)
+# print(g, x, y)
+# print(48 * x + 18 * y)  # Must equal 6
 
 
 def is_prime(n):
     """True if n is prime, false if not"""
-
-    # Less than or even numbers
-    if n < 2 or n % 2 == 0:
-        return False
     
     # 2 is still prime
     if n == 2:
         return True
 
+    # Less than or even numbers
+    if n < 2 or n % 2 == 0:
+        return False
+    
     # Left with odd divisors, up to sqrt(n)
     # From 3 onwards, check every odd number after. Check if it can be dvisable perfectly
     for i in range (3, isqrt(n) + 1, 2):
