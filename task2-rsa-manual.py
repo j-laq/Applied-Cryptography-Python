@@ -93,8 +93,8 @@ def gen_prime(size):
 
 # gen_keypair(size)
 def gen_keypair(size = 128):
-    """Gen RSA pub + priv keys"""
-    # [0] choose p and q
+    """Gen RSA pub (pub_k) + priv (priv_k) keys"""
+    #  choose p and q
     p = gen_prime(size)
     q = gen_prime(size)
 
@@ -102,18 +102,27 @@ def gen_keypair(size = 128):
     while q == p:
         q = gen_prime(size)
 
-    # [1] Find n
+    # Find n and phi
     n = p * q
-
-    # [1a?] Find phi
     phi = (p - 1) * (q - 1)
 
-# TODO: public exponent, e, such that e is greater than 1, but smaller than phi AND gcd (e, phi) = 1
-# TODO: compute private expontent, d such that d*e = 1 (mod phi(n))
-# TODO: encrypt c = m^e(mod n)
-# TODO: decrypt m = c^d(mod n)
+    # RSA pub exponent
+    e = 65537
 
-    return 0
+    # Offchance 65537 is NOT coprime with phi
+    while gcd(e, phi) != 1:
+        e = random.randrange(3, phi - 1)
+        if e % 2 == 0:
+            e+=1
+
+    # Compute priv exponent, d
+    # d*e = 1 (mod phi(n))
+    d = mod_inverse(e, phi)
+
+    pub_k = (e, n)
+    priv_k = (d, n)
+
+    return pub_k, priv_k, p, q, phi
 
 # TODO FUNCTION: encrypt
 # def encrypt(ptxt, pub_k):
