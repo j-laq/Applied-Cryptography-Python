@@ -16,9 +16,9 @@ print(f"\n[*] START \nPLAIN TEXT: {ptxt}")
 # TODO: encrypt c = m^e(mod n)
 # TODO: decrypt m = c^d(mod n)
 
-# greatest common denominator 
+# greatest common d 
 def gcd(a, b):
-    """Gives the greatest common denominator"""
+    """Gives the greatest common divisor"""
     while b != 0:
         a, b = b, a % b
     return a
@@ -26,10 +26,6 @@ def gcd(a, b):
 # FUNCTION: gcd+ 
 def gcd_plus(a, b):
     return ex_gcd(a,b)
-# g, x, y = gcd_plus(48, 18)
-# print(g, x, y)
-# print(48 * x + 18 * y)  # Must equal 6
-
 
 def is_prime(n):
     """True if n is prime, false if not"""
@@ -71,20 +67,53 @@ def ex_gcd(a, b):
     y = x1 - (a // b) * y1
     return g, x, y
 
-# TODO FUNCTION: mod inverse
-# def mod_inverse(a,m):
-#     """Find x such that (a*x) mod m = 1, for finding exponent d"""
-#     g, x, _ = gcd_plus(a,m)
+# FUNCTION: mod inverse
+def mod_inverse(a,m):
+    """Find x such that (a*x) mod m = 1, for finding exponent d"""
+    g, x, _ = gcd_plus(a,m)
 
-#     if g!= 1:
-#         print(f"[!] mod_inverse: Modular inverse does not exist")
-#         return 0
+    if g!= 1:
+        print(f"[!] mod_inverse: Modular inverse does not exist")
+        return 0
 
-#     return x % m
+    return x % m
 
-# TODO FUNCTION: gen_keypair(size)
-# def gen_keypair(size):
-#     return 0
+def gen_prime(size):
+    """Gen a prime number with aprox 'size' bits"""
+    while True:
+        out = random.getrandbits(size) #rand int up to "size boundary"
+        #bitwise OR, force highest bit to 1 (even)
+        out |= (1 << (size - 1))
+        #Force lowest bit to 1 (odd)
+        out |= 1
+
+        # Test if prime, pass, if not, loop repeats with another number
+        if is_prime(out):
+            return out
+
+# gen_keypair(size)
+def gen_keypair(size = 128):
+    """Gen RSA pub + priv keys"""
+    # [0] choose p and q
+    p = gen_prime(size)
+    q = gen_prime(size)
+
+    # Offchance that both p and q are the same
+    while q == p:
+        q = gen_prime(size)
+
+    # [1] Find n
+    n = p * q
+
+    # [1a?] Find phi
+    phi = (p - 1) * (q - 1)
+
+# TODO: public exponent, e, such that e is greater than 1, but smaller than phi AND gcd (e, phi) = 1
+# TODO: compute private expontent, d such that d*e = 1 (mod phi(n))
+# TODO: encrypt c = m^e(mod n)
+# TODO: decrypt m = c^d(mod n)
+
+    return 0
 
 # TODO FUNCTION: encrypt
 # def encrypt(ptxt, pub_k):
@@ -93,3 +122,4 @@ def ex_gcd(a, b):
 # TODO FNCUTON: decrypt()
 # def decrypt(ctxt, priv_k):
 #     return 0
+
