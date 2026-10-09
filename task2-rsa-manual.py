@@ -124,11 +124,28 @@ def gen_keypair(size = 128):
 
     return pub_k, priv_k, p, q, phi
 
-# TODO FUNCTION: encrypt
-# def encrypt(ptxt, pub_k):
-#     return 0
+def encrypt(ptxt, pub_k):
+    """Encrypt each char of a string ptxt"""
+    e, n = pub_k
+    out = []
 
-# TODO FNCUTON: decrypt()
-# def decrypt(ctxt, priv_k):
-#     return 0
+    for char in ptxt:
+        m = ord(char)
+
+        if m >= n:
+            print(f"[!] Plaintxt too big for modulus")
+
+        out.append(mod_exp(m, e, n))
+    return out
+
+def decrypt(ctxt, priv_k):
+    """Decrypt ctxt list back into a string"""
+    d, n = priv_k
+    out = []
+
+    for char in ctxt:
+        m = mod_exp(char, d, n)
+        out.append(chr(m))
+
+    return "".join(out)
 
