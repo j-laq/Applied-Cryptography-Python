@@ -9,12 +9,12 @@ print(BASE)
 #STUDENT ID: s4171913
 ptxt = "4171913"
   
-# TODO: choose 2 large primes p, q
-# TODO: compute n = p*q and phi = (p-1)(q-1)
-# TODO: public exponent, e, such that e is greater than 1, but smaller than phi AND gcd (e, phi) = 1
-# TODO: compute private expontent, d such that d*e = 1 (mod phi(n))
-# TODO: encrypt c = m^e(mod n)
-# TODO: decrypt m = c^d(mod n)
+# choose 2 large primes p, q
+# compute n = p*q and phi = (p-1)(q-1)
+# public exponent, e, such that e is greater than 1, but smaller than phi AND gcd (e, phi) = 1
+# compute private expontent, d such that d*e = 1 (mod phi(n))
+# encrypt c = m^e(mod n)
+# decrypt m = c^d(mod n)
   
 # greatest common d
 def gcd(a, b):
