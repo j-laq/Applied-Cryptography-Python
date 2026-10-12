@@ -4,6 +4,7 @@ import json
 
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
 
 # TODO: BASE
 BASE = Path(__file__).resolve().parent
@@ -31,3 +32,26 @@ D_FILE = BASE / "decrypted_task2.txt"
 # TODO: save recovered plaintxt in normal txt
 # TODO: display decry file contents in terminal
 # TODO: verify
+# TODO: ctrl f and replace all bad names with better ones
+
+def gen_rsa_keys():
+    """Gen RSA key pair and save each key in a seperate file"""
+    rsa_k = RSA.generate(2048)
+
+def e_file(pub_k_b, p_txt):
+    """
+    Hybrid encryption:
+    - Encrypt task2.txt using random AES-256 key in GCM mode.
+    - Encrypt AES key using RSA-OAEP with SHA-256.
+    """
+
+    return aes_k, e_data
+
+
+def d_file(priv_k_b):
+    """
+    1. Decrypt AES key with RSA-OAEP private key.
+    2. Decrypt and authenticate ciphertext using AES-GCM.
+    """
+
+    return aes_k, ptxt, e_data
