@@ -63,7 +63,7 @@ def e_file(pub_k_b, p_txt):
     pub_k = RSA.import_key(pub_k_b)
 
     #RSA-OAEP for secure padding, double check if txtbook RSA
-    rsa_cipher = PKCS1_OAEP.net(pub_k, hashAlgo=SHA256)
+    rsa_cipher = PKCS1_OAEP.new(pub_k, hashAlgo=SHA256)
     e_aes_k = rsa_cipher.encrypt(aes_k)
 
     e_data = {"encrypted_aes_key": b64encode(e_aes_k).decode("utf-8"), "nonce": b64encode(aes_cipher.nonce).decode("utf-8"), "tag": b64encode(tag).decode("utf-8"), "ciphertext": b64encode(c_txt).decode("utf-8")}
