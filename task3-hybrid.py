@@ -7,46 +7,28 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 
-# TODO: BASE
+# TODO: ctrl f and replace all bad names with better ones
+
 BASE = Path(__file__).resolve().parent
 
-# TODO: read plaintxt from BASE File
 INPUT_FILE = BASE / "task2.txt"
 PUB_KEY_FILE = BASE / "rsa_public.pem"
 PRIV_KEY_FILE = BASE / "rsa_private.pem"
 E_FILE = BASE / "encrypted_task2.json"
 D_FILE = BASE / "decrypted_task2.txt"
 
-# TODO: Gen RSA pub/priv key, 2048 bit RSA, no txtbook RSA, sha-256
 def gen_rsa_keys():
     rsa_key = RSA.generate(2048)
 
     priv_k_b = rsa_key.export_key(format="PEM", passphrase=None,pkcs=8)
     pub_k_b = rsa_key.publickey().export_key(format="PEM")
 
-    # TODO: Save RSA in seperate files: rsa_pub.pem, rsa_priv.pem
-    #print/write
+    #write
     PRIV_KEY_FILE.write_bytes(priv_k_b)
     PUB_KEY_FILE.write_bytes(pub_k_b)
 
     return priv_k_b, pub_k_b
 
-# TODO: Encrypt AES key using person2 RSA pub key
-# TODO: Store encrypted data
-# TODO: Dispplay details in terminal
-## RSA pub Key
-## RSA priv key
-## AES key
-## RSA-encrypted AES key
-## AES nonce
-## auth tag
-## encrypted ciphertxt
-# TODO: save recovered plaintxt in normal txt
-# TODO: display decry file contents in terminal
-# TODO: verify
-# TODO: ctrl f and replace all bad names with better ones
-
-# TODO: Encrypt info in task2.txt with AES-GCM mode, needed: ciphertxt, auth tag, nonce?
 def e_file(pub_k_b, p_txt):
     """
     Hybrid encryption:
@@ -93,3 +75,42 @@ def d_file(priv_k_b):
     D_FILE.write_bytes(p_txt)
 
     return aes_k, p_txt, e_data
+
+def main():
+    if not INPUT_FILE.exists():
+        print(f"Missing input file: {INPUT_FILE}")
+        return
+
+    p_txt = INPUT_FILE.read_bytes()
+
+    priv_k_b, pub_k_b = gen_rsa_keys()
+
+    aes_k, e_data = e_file(pub_k_b, p_txt)
+    _, d_txt, _ = d_file(priv_k_b)
+
+
+    print("\n[*] Keys")
+    print("  RSA Public Key: ")
+    print(pub_k_b.decode("utf-8"))
+
+    print(f"  AES Key: {aes_k.hex()}")
+
+    print("\n[*] Encrypted output")
+    print(f"RSA-encrypted AES key: {e_data['encrypted_aes_key']}")
+    print(f"AES nonce: {e_data['nonce']}")
+    print(f"AES authentication tag: {e_data['tag']}")
+    print(f"AES ciphertext: {e_data['ciphertext']}")
+
+    print("\n[*] Decrypted output")
+    print(d_txt.decode("utf-8", errors="replace"))
+
+    print("\n[*] Verify/Summary")
+    print(f"Original and decrypted data match: {p_txt == d_txt}")
+    print(f"Public key file: {PUB_KEY_FILE}")
+    print(f"Private key file: {PRIV_KEY_FILE}")
+    print(f"Encrypted file: {E_FILE}")
+    print(f"Decrypted file: {D_FILE}")
+
+
+if __name__ == "__main__":
+    main()
