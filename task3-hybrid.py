@@ -5,6 +5,7 @@ import json
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
+from Crypto.Random import get_random_bytes
 
 # TODO: BASE
 BASE = Path(__file__).resolve().parent
@@ -32,7 +33,6 @@ def gen_rsa_keys():
 
     return priv_k_b, pub_k_b
 
-# TODO: Encrypt info in task2.txt with AES-GCM mode, needed: ciphertxt, auth tag, nonce?
 # TODO: Encrypt AES key using person2 RSA pub key
 # TODO: Store encrypted data
 # TODO: Dispplay details in terminal
@@ -48,16 +48,27 @@ def gen_rsa_keys():
 # TODO: verify
 # TODO: ctrl f and replace all bad names with better ones
 
-def gen_rsa_keys():
-    """Gen RSA key pair and save each key in a seperate file"""
-    rsa_k = RSA.generate(2048)
-
+# TODO: Encrypt info in task2.txt with AES-GCM mode, needed: ciphertxt, auth tag, nonce?
 def e_file(pub_k_b, p_txt):
     """
     Hybrid encryption:
     - Encrypt task2.txt using random AES-256 key in GCM mode.
     - Encrypt AES key using RSA-OAEP with SHA-256.
     """
+    aes_k = get_random_bytes(32)
+
+    aes_cipher = AES.net(aes_k, AES.MODE_GCM)
+    c_txt, tag = aes_cipher.encrypt_and_digest(p_txt)
+
+    pub_k = RSA.import_key(pub_k_b)
+
+    #RSA-OAEP for secure padding, double check if txtbook RSA
+    rsa_cipher = PKCS1_OAEP.net(pub_k, hashAlgo=SHA256)
+    e_aes_k = rsa_cipher.encrypt(aes_k)
+
+    e_data = {"encrypted_aes_key": b64encode(e_aes_k).decode("utf-8"), "nonce": b64encode(aes_cipher.nonce).decode("utf-8"), "tag": b64encode(tag).decode("utf-8"), "ciphertext": b64encode(c_txt).decode("utf-8")}
+
+    E_FILE.write_text(json.dumps(e_data, indent=4), encoding="utf-8")
 
     return aes_k, e_data
 
