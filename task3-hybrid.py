@@ -11,13 +11,27 @@ BASE = Path(__file__).resolve().parent
 
 # TODO: read plaintxt from BASE File
 INPUT_FILE = BASE / "task2.txt"
-PUB_K_FILE = BASE / "rsa_public.pem"
-PRIV_K_FILE = BASE / "rsa_private.pem"
+PUB_KEY_FILE = BASE / "rsa_public.pem"
+PRIV_KEY_FILE = BASE / "rsa_private.pem"
 E_FILE = BASE / "encrypted_task2.json"
 D_FILE = BASE / "decrypted_task2.txt"
 
 # TODO: Gen RSA pub/priv key, 2048 bit RSA, no txtbook RSA, sha-256
-# TODO: Save RSA in seperate files: rsa_pub.pem, rsa_priv.pem
+def gen_rsa_keys():
+    rsa_key = RSA.generate(2048)
+
+    priv_k_b = rsa_key.export_key(formate="PEM", passphrase=None,pkcs=8)
+    pub_k_b = rsa_key.publickey().export_key(format="PEM")
+
+    # TODO: Save RSA in seperate files: rsa_pub.pem, rsa_priv.pem
+    #print/write
+    PRIV_KEY_FILE.write_bytes(priv_k_b)
+    PUB_KEY_FILE.write_bytes(pub_k_b)
+    print(f"Private Key Bytes: {priv_k_b}")
+    print(f"Public Key Bytes: {pub_k_b}")
+
+    return priv_k_b, pub_k_b
+
 # TODO: Encrypt info in task2.txt with AES-GCM mode, needed: ciphertxt, auth tag, nonce?
 # TODO: Encrypt AES key using person2 RSA pub key
 # TODO: Store encrypted data
