@@ -21,15 +21,13 @@ D_FILE = BASE / "decrypted_task2.txt"
 def gen_rsa_keys():
     rsa_key = RSA.generate(2048)
 
-    priv_k_b = rsa_key.export_key(formate="PEM", passphrase=None,pkcs=8)
+    priv_k_b = rsa_key.export_key(format="PEM", passphrase=None,pkcs=8)
     pub_k_b = rsa_key.publickey().export_key(format="PEM")
 
     # TODO: Save RSA in seperate files: rsa_pub.pem, rsa_priv.pem
     #print/write
     PRIV_KEY_FILE.write_bytes(priv_k_b)
     PUB_KEY_FILE.write_bytes(pub_k_b)
-    print(f"Private Key Bytes: {priv_k_b}")
-    print(f"Public Key Bytes: {pub_k_b}")
 
     return priv_k_b, pub_k_b
 
@@ -57,7 +55,7 @@ def e_file(pub_k_b, p_txt):
     """
     aes_k = get_random_bytes(32)
 
-    aes_cipher = AES.net(aes_k, AES.MODE_GCM)
+    aes_cipher = AES.new(aes_k, AES.MODE_GCM)
     c_txt, tag = aes_cipher.encrypt_and_digest(p_txt)
 
     pub_k = RSA.import_key(pub_k_b)
@@ -78,5 +76,20 @@ def d_file(priv_k_b):
     1. Decrypt AES key with RSA-OAEP private key.
     2. Decrypt and authenticate ciphertext using AES-GCM.
     """
+    e_data = json.loads(E_FILE.read_text(encoding="utf-8"))
+    e_aes_k = b64decode(e_data["encrypted_aes_key"])
+    nonce = b64decode(e_data["nonce"])
+    tag = b64decode(e_data["tag"])
+    c_txt = b64decode(e_data["ciphertext"])
 
-    return aes_k, ptxt, e_data
+    priv_k = RSA.import_key(priv_k_b)
+
+    rsa_cipher = PKCS1_OAEP.new(priv_k, hashAlgo=SHA256)
+    aes_k = rsa_cipher.decrypt(e_aes_k)
+
+    aes_cipher = AES.new(aes_k, AES.MODE_GCM, nonce=nonce)
+    p_txt = aes_cipher.decrypt_and_verify(c_txt, tag)
+
+    D_FILE.write_bytes(p_txt)
+
+    return aes_k, p_txt, e_data
