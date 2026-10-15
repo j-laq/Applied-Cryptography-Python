@@ -1,6 +1,7 @@
 import os
 import base64
 from getpass import getpass
+from PIL import Image
 
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
@@ -77,3 +78,35 @@ def reveal_msg(tego_img_path, word):
 
     return d_msg(hidden_data, word)
 
+def main():
+    img_path = os.path.join(BASE, "in", "image.jpg")
+    out_path = os.path.join(BASE, "out", "stego.jpg")
+
+    os.makedirs(os.path.join(BASE, "in"), exist_ok=True)
+    os.makedirs(os.path.join(BASE, "out"), exist_ok=True)
+
+    print("[1] Hide encrypted message in JPEG")
+    print("[2] Reveal encrypted message from JPEG")
+
+    choice = input("Choose option (1/2): ").strip()
+
+    if choice == "1":
+        msg = input("Secret message: ")
+        word = getpass("Encryption password: ")
+
+        hide_msg(img_path, out_path, msg, word)
+
+        print(f"Encrypted message hidden in: {out_path}")
+
+    elif choice == "2":
+        d_word = getpass("Decryption password: ")
+
+        msg = reveal_msg(out_path, d_word)
+        print(f"Decrypted secret message: {msg}")
+
+    else:
+        print("Invalid option.")
+
+
+if __name__ == "__main__":
+    main()
