@@ -10,7 +10,7 @@ from cryptography.hazmat.primitives import hashes
 #base
 BASE = os.path.dirname(os.path.abspath(__file__))
 
-INPUT_IMAGE = os.path.join(BASE, "in", "cover.jpg")
+INPUT_IMAGE = os.path.join(BASE, "in", "image.jpg")
 STEGO_IMAGE = os.path.join(BASE, "out", "stego.jpg")
 
 #EXIF tag id for JPEG, to use UserComment
@@ -67,8 +67,8 @@ def hide_msg(img_path, out_path, msg, word):
 
         img.save(out_path, format="JPEG", exif=exif.tobytes(), quality="keep", subsampling="keep")
 
-def reveal_msg(tego_img_path, word):
-    with Image.open(STEGO_IMAGE) as image:
+def reveal_msg(stego_img_path, word):
+    with Image.open(stego_img_path) as image:
 
         exif = image.getexif()
         hidden_data = exif.get(EXIF_USER_COMMENT)
