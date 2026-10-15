@@ -67,5 +67,13 @@ def hide_msg(img_path, out_path, msg, word):
         img.save(out_path, format="JPEG", exif=exif.tobytes(), quality="keep", subsampling="keep")
 
 def reveal_msg(tego_img_path, word):
-    return "..."
+    with Image.open(STEGO_IMAGE) as image:
+
+        exif = image.getexif()
+        hidden_data = exif.get(EXIF_USER_COMMENT)
+
+    if isinstance(hidden_data, str):
+        hidden_data = hidden_data.encode("utf-8")
+
+    return d_msg(hidden_data, word)
 
