@@ -25,8 +25,6 @@ def get_aes_k(word, salt):
 
 def e_msg(msg, word):
     """Output formate: MAGIC + base64(salt + nonce + AES-GCM ctxt)"""
-    payload = "..."
-
     #128 bits
     salt = os.urandom(16)
     #96 bits for AWS-GCM
@@ -37,16 +35,36 @@ def e_msg(msg, word):
 
     #.encrypt(nonce, data, associated data)
     ctxt = aesgcm.encrypt(nonce, msg.encode("utf-8"), None)
-    
+
     payload = salt + nonce + ctxt
     return MAGIC + base64.b64encode(payload)
 
 def d_msg(hidden_data, word):
     """Decrypt AES-GCM payload from JPEG metadata"""
-    return "..."
+    payload = base64.b64decode(hidden_data[len(MAGIC): ])
+
+    #salt: up to 16 bytes
+    #nonce: 16 to 28
+    # ctxt 28 over
+    salt = payload[0:16]
+    nonce = payload[16:28]
+    ctxt = payload[28:]
+
+    key = get_aes_k(word, salt)
+    aesgcm = AESGCM(key)
+
+    ptxt = aesgcm.decrypt(nonce, ctxt, None)
+    return ptxt.decode("utf-8")
 
 def hide_msg(img_path, out_path, msg, word):
     """Encrypt msg first, then store in JPEG EXIF UserComment metadata. Check if image is unchanged"""
+    e_data = e_msg(msg, word)
+
+    with Image.open(img_path) as img:
+        exif = img.getexif()
+        exif[EXIF_USER_COMMENT] = e_data
+
+        img.save(out_path, format="JPEG", exif=exif.tobytes(), quality="keep", subsampling="keep")
 
 def reveal_msg(tego_img_path, word):
     return "..."
