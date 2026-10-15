@@ -2,8 +2,6 @@ import os
 import base64
 from getpass import getpass
 
-#!! INSTALL CRYPTOGRAPHY IN TERMINal
-# and pillow, when we get there
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
@@ -27,7 +25,21 @@ def get_aes_k(word, salt):
 
 def e_msg(msg, word):
     """Output formate: MAGIC + base64(salt + nonce + AES-GCM ctxt)"""
-    return 0
+    payload = "..."
+
+    #128 bits
+    salt = os.urandom(16)
+    #96 bits for AWS-GCM
+    nonce = os.urandom(12)
+
+    key = get_aes_k(word, salt)
+    aesgcm = AESGCM(key)
+
+    #.encrypt(nonce, data, associated data)
+    ctxt = aesgcm.encrypt(nonce, msg.encode("utf-8"), None)
+    
+    payload = salt + nonce + ctxt
+    return MAGIC + base64.b64encode(payload)
 
 def d_msg(hidden_data, word):
     """Decrypt AES-GCM payload from JPEG metadata"""
