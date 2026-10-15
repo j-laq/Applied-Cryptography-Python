@@ -7,6 +7,8 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
+#TODO: add checks for valid inputs, and rename if needed
+
 #base
 BASE = os.path.dirname(os.path.abspath(__file__))
 
