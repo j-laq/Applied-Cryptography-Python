@@ -1,6 +1,11 @@
+# Feel free to use https://www.cryptool.org/en/cto/openssl/ to generate primes
+# openssl prime -generate -bits 1024
+# run command twice to get the 2 needed primes
+
 import hashlib
 import math
 from pathlib import Path
+import secrets
 
 BASE = Path(__file__).resolve().parent
 
@@ -69,10 +74,46 @@ def oaep_encode(msg, mod_length):
     """
     RSA-OAEP encoding with SHA-256. Random padding means same message encrypts differently each run
     """
-    return 0
+    label = b""
+    label_hash = HASH(label).digest()
+
+    max_msg_length = mod_length - (2 * HASH_LEN) - 2
+
+    #ptxt length check
+    if len(msg) > max_msg_length:
+        print(
+            f"Plaintext is too long. Maximum length is "
+            f"{max_msg_length} UTF-8 bytes."
+        )
+        return None
+
+    #setup padding sizes
+    padding_length = max_msg_length - len(msg)
+    padding = b"\x00" * padding_length
+
+    data_block = label_hash + padding + b"\x01" + msg
+
+    seed = secrets.token_bytes(HASH_LEN)
+
+    #dara and seed to be masked with XOR
+    data_mask = mgf1(seed, mod_length - HASH_LEN - 1)
+    masked_data_block = xor_bytes(data_block, data_mask)
+
+    seed_mask = mgf1(masked_data_block, HASH_LEN)
+    masked_seed = xor_bytes(seed, seed_mask)
+
+    return b"\x00" + masked_seed + masked_data_block
 
 def rsa_oaep_e(ptxt, n):
-    return 0
+    mod_length = (n.bit_length() + 7) // 8
+    encoded_message = oaep_encode(ptxt.encode("utf-8"), mod_length)
+
+    if encoded_message is None:
+        return None
+
+    message_int = int.from_bytes(encoded_message, byteorder="big")
+
+    return pow(message_int, E, n)
 
 
 
@@ -94,6 +135,8 @@ def main():
     if math.gcd(E, phi) != 1:
         print("Invalid prime values: 65537 is not coprime with phi(n).")
         return
+
+    ctxt = rsa_oaep_e(ptxt, n)
 
     FILE_KEY.write_text(f"({E}, {n})", encoding="utf-8")
 

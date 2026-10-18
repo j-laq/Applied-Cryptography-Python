@@ -5,16 +5,8 @@ from math import isqrt
 # for base requirement,
 BASE = os.path.dirname(os.path.abspath(__file__))
 print(BASE)
-  
-#STUDENT ID: s4171913
+
 ptxt = "4171913"
-  
-# choose 2 large primes p, q
-# compute n = p*q and phi = (p-1)(q-1)
-# public exponent, e, such that e is greater than 1, but smaller than phi AND gcd (e, phi) = 1
-# compute private expontent, d such that d*e = 1 (mod phi(n))
-# encrypt c = m^e(mod n)
-# decrypt m = c^d(mod n)
   
 # greatest common d
 def gcd(a, b):
@@ -23,7 +15,6 @@ def gcd(a, b):
         a, b = b, a % b
     return a
   
-# FUNCTION: gcd+
 def gcd_plus(a, b):
     return ex_gcd(a, b)
   
@@ -82,9 +73,9 @@ def mod_inverse(a, m):
 def gen_prime(size):
     """Gen a prime number with aprox 'size' bits"""
     while True:
-        out = random.getrandbits(size) #rand int up to "size boundary"
+        out = random.getrandbits(size)
 
-        # bitwise OR, force highest bit to 1 (even)
+        # bitwise XOR, force highest bit to 1 (even)
         out |= (1 << (size - 1))
 
         #Force lowest bit to 1 (odd)
@@ -94,7 +85,6 @@ def gen_prime(size):
         if is_prime(out):
             return out
   
-# gen_keypair(size)
 def gen_keypair(size = 128):
     """Gen RSA pub (pub_k) + priv (priv_k) keys"""
     # choose p and q
@@ -154,7 +144,6 @@ def decrypt(ctxt, priv_k):
   
     return "".join(out)
 
-# Run and out it!
 print("\n[*] START")
 print(f"PLAIN TEXT: {ptxt}")
   

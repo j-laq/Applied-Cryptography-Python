@@ -7,8 +7,6 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Random import get_random_bytes
 
-# TODO: ctrl f and replace all bad names with better ones
-
 BASE = Path(__file__).resolve().parent
 
 INPUT_FILE = BASE / "task2.txt"

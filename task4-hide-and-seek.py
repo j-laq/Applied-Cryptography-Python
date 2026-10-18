@@ -7,8 +7,6 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
-#TODO: add checks for valid inputs, and rename if needed
-
 #base
 BASE = os.path.dirname(os.path.abspath(__file__))
 
@@ -18,16 +16,13 @@ STEGO_IMAGE = os.path.join(BASE, "out", "stego.jpg")
 #EXIF tag id for JPEG, to use UserComment
 EXIF_USER_COMMENT = 37510
 
-# magic byte sequence, the header for metadata, will delete later
-MAGIC = b"STEGO_AES_GCM_V1:"
-
 def get_aes_k(word, salt):
     """Create 256-bit AES key from given password"""
     kdf = PBKDF2HMAC( algorithm=hashes.SHA256(), length=32, salt=salt, iterations=600_000)
     return kdf.derive(word.encode("utf-8"))
 
 def e_msg(msg, word):
-    """Output formate: MAGIC + base64(salt + nonce + AES-GCM ctxt)"""
+    """Output formate: base64(salt + nonce + AES-GCM ctxt)"""
     #128 bits
     salt = os.urandom(16)
     #96 bits for AWS-GCM
@@ -40,15 +35,15 @@ def e_msg(msg, word):
     ctxt = aesgcm.encrypt(nonce, msg.encode("utf-8"), None)
 
     payload = salt + nonce + ctxt
-    return MAGIC + base64.b64encode(payload)
+    return base64.b64encode(payload)
 
 def d_msg(hidden_data, word):
     """Decrypt AES-GCM payload from JPEG metadata"""
-    payload = base64.b64decode(hidden_data[len(MAGIC): ])
+    payload = base64.b64decode(hidden_data)
 
     #salt: up to 16 bytes
     #nonce: 16 to 28
-    # ctxt 28 over
+    # ctxt 28+
     salt = payload[0:16]
     nonce = payload[16:28]
     ctxt = payload[28:]
