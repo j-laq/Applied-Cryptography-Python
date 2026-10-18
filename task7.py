@@ -26,16 +26,44 @@ def get_prime(prompt, other=None):
     """
     Checks for user input: primes, names, ptxt
     """
-    out = ""
+    while True:
+        value = input(prompt).strip()
 
-    return out
+        # integer check
+        if not value.isdecimal():
+            print("Prime must be an integer")
+            continue
+
+        value = int(value)
+
+        # no. of bits check, reccomended minimum of 1024
+        if value.bit_length() < MIN_PRIME_BITS:
+            print(f"Prime must be at least {MIN_PRIME_BITS} bits.")
+            continue
+        # p = q check
+        if other is not None and value == other:
+            print("The two primes must be different.")
+            continue
+
+        return value
 
 def xor_bytes(a, b):
     return bytes(x ^ y for x, y in zip(a, b))
 
 def mgf1(seed, length):
     """Mask gen function 1 using SHA-256."""
-    return 0
+    output = b""
+    counter = 0
+
+    # hash  random seed + an increasing 4-byte counter
+    # add the hash output for all of "length"
+    while len(output) < length:
+        counter_bytes = counter.to_bytes(4, byteorder="big")
+        output += HASH(seed + counter_bytes).digest()
+        counter += 1
+
+    return output[:length]
+
 
 def oaep_encode(msg, mod_length):
     """
@@ -43,7 +71,7 @@ def oaep_encode(msg, mod_length):
     """
     return 0
 
-def rsa_oaep_encrypt(ptxt, n):
+def rsa_oaep_e(ptxt, n):
     return 0
 
 
@@ -67,16 +95,10 @@ def main():
         print("Invalid prime values: 65537 is not coprime with phi(n).")
         return
 
-    try:
-        ciphertext = rsa_oaep_e(ptxt, n)
-    except ValueError as error:
-        print(error)
-        return
-
     FILE_KEY.write_text(f"({E}, {n})", encoding="utf-8")
 
     # not used to encrypt the message.
-    FILE_CIPHER.write_text(f"{ciphertext}\n{initials}\n", encoding="utf-8")
+    FILE_CIPHER.write_text(f"{ctxt}\n{initials}\n", encoding="utf-8")
 
     print(f"\nCreated: {FILE_KEY}")
     print(f"Created: {FILE_CIPHER}")
