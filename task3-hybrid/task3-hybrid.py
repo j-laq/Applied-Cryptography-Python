@@ -9,11 +9,15 @@ from Crypto.Random import get_random_bytes
 
 BASE = Path(__file__).resolve().parent
 
-INPUT_FILE = BASE / "task2.txt"
-PUB_KEY_FILE = BASE / "rsa_public.pem"
-PRIV_KEY_FILE = BASE / "rsa_private.pem"
-E_FILE = BASE / "encrypted_task2.json"
-D_FILE = BASE / "decrypted_task2.txt"
+INPUT_DIR = BASE / "input"
+KEYS_DIR = BASE / "keys"
+OUTPUT_DIR = BASE / "output"
+
+INPUT_FILE = INPUT_DIR / "task2.txt"
+PUB_KEY_FILE = KEYS_DIR / "rsa_public.pem"
+PRIV_KEY_FILE = KEYS_DIR / "rsa_private.pem"
+E_FILE = OUTPUT_DIR / "encrypted_task2.json"
+D_FILE = OUTPUT_DIR / "decrypted_task2.txt"
 
 def gen_rsa_keys():
     rsa_key = RSA.generate(2048)
@@ -21,7 +25,7 @@ def gen_rsa_keys():
     priv_k_b = rsa_key.export_key(format="PEM", passphrase=None,pkcs=8)
     pub_k_b = rsa_key.publickey().export_key(format="PEM")
 
-    #write
+    # Write into files
     PRIV_KEY_FILE.write_bytes(priv_k_b)
     PUB_KEY_FILE.write_bytes(pub_k_b)
 
@@ -40,7 +44,7 @@ def e_file(pub_k_b, p_txt):
 
     pub_k = RSA.import_key(pub_k_b)
 
-    #RSA-OAEP for secure padding, double check if txtbook RSA
+    # RSA-OAEP for secure padding
     rsa_cipher = PKCS1_OAEP.new(pub_k, hashAlgo=SHA256)
     e_aes_k = rsa_cipher.encrypt(aes_k)
 
@@ -56,6 +60,7 @@ def d_file(priv_k_b):
     1. Decrypt AES key with RSA-OAEP private key.
     2. Decrypt and authenticate ciphertext using AES-GCM.
     """
+    # Base64 decoding
     e_data = json.loads(E_FILE.read_text(encoding="utf-8"))
     e_aes_k = b64decode(e_data["encrypted_aes_key"])
     nonce = b64decode(e_data["nonce"])
@@ -75,6 +80,10 @@ def d_file(priv_k_b):
     return aes_k, p_txt, e_data
 
 def main():
+    INPUT_DIR.mkdir(exist_ok=True)
+    KEYS_DIR.mkdir(exist_ok=True)
+    OUTPUT_DIR.mkdir(exist_ok=True)
+
     if not INPUT_FILE.exists():
         print(f"Missing input file: {INPUT_FILE}")
         return
@@ -85,7 +94,6 @@ def main():
 
     aes_k, e_data = e_file(pub_k_b, p_txt)
     _, d_txt, _ = d_file(priv_k_b)
-
 
     print("\n[*] Keys")
     print("  RSA Public Key: ")

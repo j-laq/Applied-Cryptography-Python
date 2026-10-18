@@ -2,13 +2,18 @@ import os
 import random
 from math import isqrt
   
-# for base requirement,
 BASE = os.path.dirname(os.path.abspath(__file__))
-print(BASE)
 
-ptxt = "4171913"
+INPUT_DIR = os.path.join(BASE, "input")
+KEYS_DIR = os.path.join(BASE, "keys")
+OUTPUT_DIR = os.path.join(BASE, "output")
+
+INPUT_FILE = os.path.join(INPUT_DIR, "plaintext.txt")
+PUBLIC_KEY_FILE = os.path.join(KEYS_DIR, "public_key.txt")
+PRIVATE_KEY_FILE = os.path.join(KEYS_DIR, "private_key.txt")
+CIPHER_FILE = os.path.join(OUTPUT_DIR, "ciphertext.txt")
+DECRYPTED_FILE = os.path.join(OUTPUT_DIR, "decrypted.txt")
   
-# greatest common d
 def gcd(a, b):
     """Gives the greatest common divisor"""
     while b != 0:
@@ -41,7 +46,7 @@ def mod_exp(base, exp, mod):
     base = base % mod
 
     while exp > 0:
-        if exp & 1: #bitwise comparison: if current bit is 1, multiply into result
+        if exp & 1: # Bitwise comparison: if current bit is 1, multiply into result
             result = (result * base) % mod
   
         # Square base, shift exp right, which is divide by 2
@@ -75,10 +80,8 @@ def gen_prime(size):
     while True:
         out = random.getrandbits(size)
 
-        # bitwise XOR, force highest bit to 1 (even)
+        # Force lowest bit to 1 (odd)
         out |= (1 << (size - 1))
-
-        #Force lowest bit to 1 (odd)
         out |= 1
   
         # Test if prime, pass, if not, loop repeats with another number
@@ -87,7 +90,7 @@ def gen_prime(size):
   
 def gen_keypair(size = 128):
     """Gen RSA pub (pub_k) + priv (priv_k) keys"""
-    # choose p and q
+    # Choose p and q
     p = gen_prime(size)
     q = gen_prime(size)
   
@@ -144,6 +147,16 @@ def decrypt(ctxt, priv_k):
   
     return "".join(out)
 
+os.makedirs(INPUT_DIR, exist_ok=True)
+os.makedirs(KEYS_DIR, exist_ok=True)
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+if not os.path.exists(INPUT_FILE):
+    print(f"Missing input file: {INPUT_FILE}")
+    raise SystemExit(1)
+
+ptxt = open(INPUT_FILE, "r", encoding="utf-8").read()
+
 print("\n[*] START")
 print(f"PLAIN TEXT: {ptxt}")
   
@@ -152,6 +165,18 @@ public_key, private_key, p, q, phi = gen_keypair(32)
 
 ciphertext = encrypt(ptxt, public_key)
 decrypted_text = decrypt(ciphertext, private_key)
+
+with open(PUBLIC_KEY_FILE, "w", encoding="utf-8") as file:
+    file.write(f"{public_key[0]},{public_key[1]}")
+
+with open(PRIVATE_KEY_FILE, "w", encoding="utf-8") as file:
+    file.write(f"{private_key[0]},{private_key[1]}")
+
+with open(CIPHER_FILE, "w", encoding="utf-8") as file:
+    file.write(",".join(map(str, ciphertext)))
+
+with open(DECRYPTED_FILE, "w", encoding="utf-8") as file:
+    file.write(decrypted_text)
 
 print(f"\np   = {p}")
 print(f"q   = {q}")

@@ -7,13 +7,16 @@ from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 
-#base
 BASE = os.path.dirname(os.path.abspath(__file__))
 
-INPUT_IMAGE = os.path.join(BASE, "in", "image.jpg")
-STEGO_IMAGE = os.path.join(BASE, "out", "stego.jpg")
+INPUT_DIR = os.path.join(BASE, "input")
+KEYS_DIR = os.path.join(BASE, "keys")
+OUTPUT_DIR = os.path.join(BASE, "output")
 
-#EXIF tag id for JPEG, to use UserComment
+INPUT_IMAGE = os.path.join(INPUT_DIR, "image.jpg")
+STEGO_IMAGE = os.path.join(OUTPUT_DIR, "stego.jpg")
+
+# EXIF tag id for JPEG, to use UserComment
 EXIF_USER_COMMENT = 37510
 
 def get_aes_k(word, salt):
@@ -41,8 +44,8 @@ def d_msg(hidden_data, word):
     """Decrypt AES-GCM payload from JPEG metadata"""
     payload = base64.b64decode(hidden_data)
 
-    #salt: up to 16 bytes
-    #nonce: 16 to 28
+    # Salt: up to 16 bytes
+    # Nonce: 16 to 28
     # ctxt 28+
     salt = payload[0:16]
     nonce = payload[16:28]
@@ -76,11 +79,12 @@ def reveal_msg(stego_img_path, word):
     return d_msg(hidden_data, word)
 
 def main():
-    img_path = os.path.join(BASE, "in", "image.jpg")
-    out_path = os.path.join(BASE, "out", "stego.jpg")
+    img_path = INPUT_IMAGE
+    out_path = STEGO_IMAGE
 
-    os.makedirs(os.path.join(BASE, "in"), exist_ok=True)
-    os.makedirs(os.path.join(BASE, "out"), exist_ok=True)
+    os.makedirs(INPUT_DIR, exist_ok=True)
+    os.makedirs(KEYS_DIR, exist_ok=True)
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
 
     print("[1] Hide encrypted message in JPEG")
     print("[2] Reveal encrypted message from JPEG")
@@ -88,6 +92,10 @@ def main():
     choice = input("Choose option (1/2): ").strip()
 
     if choice == "1":
+        if not os.path.exists(img_path):
+            print(f"Missing input file: {img_path}")
+            return
+
         msg = input("Secret message: ")
         word = getpass("Encryption password: ")
 
@@ -96,6 +104,10 @@ def main():
         print(f"Encrypted message hidden in: {out_path}")
 
     elif choice == "2":
+        if not os.path.exists(out_path):
+            print(f"Missing output file: {out_path}")
+            return
+
         d_word = getpass("Decryption password: ")
 
         msg = reveal_msg(out_path, d_word)
