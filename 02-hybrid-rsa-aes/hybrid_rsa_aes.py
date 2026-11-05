@@ -13,11 +13,11 @@ INPUT_DIR = BASE / "input"
 KEYS_DIR = BASE / "keys"
 OUTPUT_DIR = BASE / "output"
 
-INPUT_FILE = INPUT_DIR / "task2.txt"
+INPUT_FILE = INPUT_DIR / "message.txt"
 PUB_KEY_FILE = KEYS_DIR / "rsa_public.pem"
 PRIV_KEY_FILE = KEYS_DIR / "rsa_private.pem"
-E_FILE = OUTPUT_DIR / "encrypted_task2.json"
-D_FILE = OUTPUT_DIR / "decrypted_task2.txt"
+E_FILE = OUTPUT_DIR / "encrypted_message.json"
+D_FILE = OUTPUT_DIR / "decrypted_message.txt"
 
 def gen_rsa_keys():
     rsa_key = RSA.generate(2048)
@@ -34,7 +34,7 @@ def gen_rsa_keys():
 def e_file(pub_k_b, p_txt):
     """
     Hybrid encryption:
-    - Encrypt task2.txt using random AES-256 key in GCM mode.
+    - Encrypt the input file using random AES-256 key in GCM mode.
     - Encrypt AES key using RSA-OAEP with SHA-256.
     """
     aes_k = get_random_bytes(32)
