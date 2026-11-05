@@ -107,5 +107,7 @@ Large primes can be generated with `openssl prime -generate -bits 1024` (run it 
 
 Python 3 · RSA · RSA-OAEP · AES-256-GCM · PBKDF2 · SHA-256 / MGF1 · EXIF steganography · pycryptodome · cryptography · Pillow
 
+---
+
 Made with the help of multiple 12oz flat white's. ☕
 ~ Jamal L (jlaq)
