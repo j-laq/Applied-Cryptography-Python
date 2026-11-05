@@ -2,7 +2,8 @@
 
 Four small Python projects that implement and attack common public-key and symmetric cryptography techniques. They range from writing RSA by hand to replacing a broken RSA scheme with a hardened RSA-OAEP version.
 
-Built for the *Security in Information Technology* course at RMIT University.
+> **About this project**
+> I completed this work for an assignment for a university course. The assignment asked for working implementations of core cryptographic building blocks: RSA built from first principles, hybrid encryption, and steganography. It also included a security investigation, in which I tested a deliberately flawed "secure messaging" program, worked out why an attacker could break it, and built a replacement that the attack can't break. This repo contains only my programming work.
 
 | # | Project | What it shows | Libraries |
 |---|---------|---------------|-----------|
@@ -86,7 +87,7 @@ The carrier is `input/image.jpg`, a generated gradient you can replace with any 
 
 `04-rsa-oaep-hardened-cipher/rsa_oaep_cipher.py`
 
-**Background:** I was given a closed-source "secure messaging" tool and a matching cracking tool. The task was to find out why the cracker could recover plaintexts, and then build a replacement that it cannot break.
+**Background:** I was given a closed-source "secure messaging" tool and a matching cracking tool, provided by the class professors. The task was to find out why the cracker could recover plaintexts, and then build a replacement that it cannot break.
 
 **What was wrong with the original:** the analysis found the weaknesses that classic textbook RSA misuse creates: small (~1M) primes that are easy to factor, and deterministic, unpadded encryption in which the same input always gives the same output. Unrelated inputs, such as the user's name, were displayed as if they were part of the scheme, to mislead the analyst.
 
@@ -105,3 +106,6 @@ Large primes can be generated with `openssl prime -generate -bits 1024` (run it 
 ## Tech
 
 Python 3 · RSA · RSA-OAEP · AES-256-GCM · PBKDF2 · SHA-256 / MGF1 · EXIF steganography · pycryptodome · cryptography · Pillow
+
+Made with the help of multiple 12oz flat white's. ☕
+~ Jamal L (jlaq)
